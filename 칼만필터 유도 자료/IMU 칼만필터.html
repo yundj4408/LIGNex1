@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<link rel="stylesheet" type="text/css" href="https://t1.daumcdn.net/tistory_admin/lib/lightbox/css/lightbox.min.css" /><link rel="stylesheet" type="text/css" href="https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/style/content/font.css?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4" /><link rel="stylesheet" type="text/css" href="https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/style/content/content.css?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4" /><!--[if lt IE 9]><script src="https://t1.daumcdn.net/tistory_admin/lib/jquery/jquery-1.12.4.min.js"></script><![endif]--><!--[if gte IE 9]>
+<!--><script src="https://t1.daumcdn.net/tistory_admin/lib/jquery/jquery-3.2.1.min.js"></script><!--<![endif]-->
+<script src="https://t1.daumcdn.net/tistory_admin/lib/lightbox/js/lightbox-plus-jquery.min.js"></script>
+<script>
+lightbox.options.fadeDuration = 200;
+lightbox.options.resizeDuration = 200;
+lightbox.options.wrapAround = false;
+lightbox.options.albumLabel = "%1 / %2";
+</script>
+<script>var tjQuery = jQuery.noConflict(true);</script><style type="text/css">.tt_article_useless_p_margin p {padding-top:0 !important;padding-bottom:0 !important;margin-top:0 !important;margin-bottom:0 !important;}</style><meta name="referrer" content="always"><link rel="icon" href="//t1.daumcdn.net/tistory_admin/static/top/favicon_0630.ico" /><link rel="apple-touch-icon" href="//img1.daumcdn.net/thumb/C180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F241F093D5701E73803">
+<link rel="apple-touch-icon" sizes="76x76" href="//img1.daumcdn.net/thumb/C76x76/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F241F093D5701E73803">
+<link rel="apple-touch-icon" sizes="120x120" href="//img1.daumcdn.net/thumb/C120x120/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F241F093D5701E73803">
+<link rel="apple-touch-icon" sizes="152x152" href="//img1.daumcdn.net/thumb/C152x152/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F241F093D5701E73803"><meta name="description" content=" - 칼만 필터를 사용할때는 state, 모델, Z 뭔지 반드시 설명 해야함  - 78.5hz 가 아쉽  - 최소 500hz 에서 law pass filter 한번 돌리고 다시 칼만을 넣으면 훨씬 더 정확해질 수 있음 연구 목적 IMU를 통해..">
+
+<!-- BEGIN OPENGRAPH -->
+<link rel="canonical" href="https://wsstudynote.tistory.com/7" /><meta property="og:type" content="article"><meta property="og:url" content="https://wsstudynote.tistory.com/7" ><meta property="og:article:author" content="rladntjd" ><meta property="og:site_name" content="우성이의 정리노트" ><meta property="og:title" content="[우수학부생] Kalman Filter 을 이용한 자세 추정 및 모션 캡처를 이용한 실험 결과" ><meta name="by" content="rladntjd" ><meta property="og:description" content=" - 칼만 필터를 사용할때는 state, 모델, Z 뭔지 반드시 설명 해야함  - 78.5hz 가 아쉽  - 최소 500hz 에서 law pass filter 한번 돌리고 다시 칼만을 넣으면 훨씬 더 정확해질 수 있음 연구 목적 IMU를 통해.." ><meta property="og:image" content="https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbCfKg6%2FbtqCRyTux0A%2FyLlUmw1tAsgk2mgnxSd47K%2Fimg.png" >
+<!-- END OPENGRAPH -->
+
+
+
+<!-- BEGIN TWITTERCARD -->
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@TISTORY"><meta name="twitter:title" content="[우수학부생] Kalman Filter 을 이용한 자세 추정 및 모션 캡처를 이용한 실험 결과" ><meta name="twitter:description" content=" - 칼만 필터를 사용할때는 state, 모델, Z 뭔지 반드시 설명 해야함  - 78.5hz 가 아쉽  - 최소 500hz 에서 law pass filter 한번 돌리고 다시 칼만을 넣으면 훨씬 더 정확해질 수 있음 연구 목적 IMU를 통해.." ><meta property="twitter:image" content="https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbCfKg6%2FbtqCRyTux0A%2FyLlUmw1tAsgk2mgnxSd47K%2Fimg.png" >
+<!-- END TWITTERCARD -->
+
+
+
+<!-- BEGIN DAUMAPP -->
+<meta property="dg:plink" content="https://wsstudynote.tistory.com/7" ><meta name="plink" content="https://wsstudynote.tistory.com/7" ><meta name="title" content="[우수학부생] Kalman Filter 을 이용한 자세 추정 및 모션 캡처를 이용한 실험 결과" ><meta name="article:media_name" content="우성이의 정리노트" ><meta property="article:mobile_url" content="https://wsstudynote.tistory.com/m/7" ><meta property="article:pc_url" content="https://wsstudynote.tistory.com/7" ><meta property="article:mobile_view_url" content="https://wsstudynote.tistory.com/m/7" ><meta property="article:pc_view_url" content="https://wsstudynote.tistory.com/7" ><meta property="article:talk_channel_view_url" content="https://wsstudynote.tistory.com/m/7" ><meta property="article:pc_service_home" content="https://www.tistory.com" ><meta property="article:mobile_service_home" content="https://www.tistory.com/m" ><meta property="article:txid" content="3519319_7" /><meta property="article:published_time" content="2020-02-14T15:23:34+09:00" ><meta property="og:regDate" content="20200214152334" ><meta property="article:modified_time" content="2020-07-23T16:35:24+09:00" >
+<!-- END DAUMAPP -->
+
+
+
+<!-- BEGIN STRUCTURED_DATA -->
+<script type="application/ld+json">{"@context":"http:\/\/schema.org","@type":"BlogPosting","mainEntityOfPage":{"@id":"https:\/\/wsstudynote.tistory.com\/7"},"url":"https:\/\/wsstudynote.tistory.com\/7","headline":"[\uc6b0\uc218\ud559\ubd80\uc0dd] Kalman Filter \uc744 \uc774\uc6a9\ud55c \uc790\uc138 \ucd94\uc815 \ubc0f \ubaa8\uc158 \ucea1\ucc98\ub97c \uc774\uc6a9\ud55c \uc2e4\ud5d8 \uacb0\uacfc","description":"\u00a0- \uce7c\ub9cc \ud544\ud130\ub97c \uc0ac\uc6a9\ud560\ub54c\ub294 state, \ubaa8\ub378, Z \ubb54\uc9c0 \ubc18\ub4dc\uc2dc \uc124\uba85 \ud574\uc57c\ud568 \u00a0- 78.5hz \uac00 \uc544\uc27d \u00a0- \ucd5c\uc18c 500hz \uc5d0\uc11c law pass filter \ud55c\ubc88 \ub3cc\ub9ac\uace0 \ub2e4\uc2dc \uce7c\ub9cc\uc744 \ub123\uc73c\uba74 \ud6e8\uc52c \ub354 \uc815\ud655\ud574\uc9c8 \uc218 \uc788\uc74c \uc5f0\uad6c \ubaa9\uc801 IMU\ub97c \ud1b5\ud574..","author":{"@type":"Person","name":"rladntjd"},"image":{"@type":"ImageObject","url":"https:\/\/img1.daumcdn.net\/thumb\/R800x0\/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbCfKg6%2FbtqCRyTux0A%2FyLlUmw1tAsgk2mgnxSd47K%2Fimg.png","width":"800px","height":"800px"},"datePublished":"20200214T15:23:34+09:00","dateModified":"20200723T16:35:24+09:00","publisher":{"@type":"Organization","name":"TISTORY","logo":{"@type":"ImageObject","url":"https:\/\/t1.daumcdn.net\/tistory_admin\/static\/images\/openGraph\/opengraph.png","width":"800px","height":"800px"}}}</script><meta name="robots" content="max-image-preview:large">
+<!-- END STRUCTURED_DATA -->
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width">
+<title>[우수학부생] Kalman Filter 을 이용한 자세 추정 및 모션 캡처를 이용한 실험 결과</title>
+<link rel="stylesheet" href="https://tistory1.daumcdn.net/tistory/0/pg_Whatever/style.css">
+<script src="//t1.daumcdn.net/tistory_admin/lib/jquery/jquery-1.12.4.min.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-179980082-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config','UA-179980082-1');
+    gtag('event', 'page_view', { 'send_to': 'UA-179980082-1' });
+</script>
+<style type="text/css">
+		#daumSearchBox {
+			height: 21px;
+			background-image : url(//i1.daumcdn.net/imgsrc.search/search_all/show/tistory/plugin/bg_search2_2.gif);
+			margin: 5px auto ;
+			padding: 0;
+		}
+		#daumSearchBox input {
+			background: none;
+			margin : 0;
+			padding : 0;
+			border : 0;
+		}
+		#daumSearchBox #daumLogo {
+			width: 34px;
+			height: 21px;
+			float: left;
+			margin-right: 5px;
+			background-image : url(//i1.daumcdn.net/img-media/tistory/img/bg_search1_2_2010ci.gif);
+		}
+		#daumSearchBox #show_q {
+			background-color: transparent;
+			border: none;
+			font: 12px Gulim, Sans-serif;
+			color: #555;
+			margin-top: 4px;
+			margin-right: 15px;
+			float: left;
+		}
+
+		#daumSearchBox #show_btn {
+			background-image : url(//i1.daumcdn.net/imgsrc.search/search_all/show/tistory/plugin/bt_search_2.gif);
+			width: 37px;
+			height: 21px;
+			float: left;
+			margin:0;
+			cursor:pointer;
+			text-indent:-1000em;
+		}
+	</style>
+<link rel="stylesheet" type="text/css" href="https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/plugins/TistoryProfileLayer/style.css?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4" />
+<script type="text/javascript" src="https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/plugins/TistoryProfileLayer/profile.js?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4"></script>
+	<style type="text/css">
+		.another_category { border: 1px solid #E5E5E5; padding: 10px 10px 5px; margin:10px 0; clear: both; }
+		.another_category h4 { font-size: 12px !important; margin: 0 !important; border-bottom: 1px solid #E5E5E5 !important; padding: 2px 0 6px !important; }
+		.another_category h4 a { font-weight: bold !important; }
+		.another_category table { table-layout: fixed; border-collapse: collapse; width: 100% !important; margin-top: 10px !important; }
+		* html .another_category table { width: auto !important; }
+		*:first-child+html .another_category table { width: auto !important; }
+		.another_category th, .another_category td { padding: 0 0 4px !important; }
+		.another_category th { text-align: left; font-size: 12px !important; font-weight: normal;  word-break: break-all; overflow: hidden; line-height: 1.5; }
+		.another_category td { text-align: right; width: 80px; font-size: 11px; }
+		.another_category th a { font-weight: normal; text-decoration: none; border: none !important; }
+		.another_category th a.current{ font-weight: bold; text-decoration: none !important; border-bottom: 1px solid !important; }
+		.another_category th span { font-weight: normal; text-decoration: none; font: 10px Tahoma, Sans-serif; border: none !important; }
+
+		.another_category_color_gray, .another_category_color_gray h4 { border-color: #E5E5E5 !important; }
+		.another_category_color_gray * { color: #909090 !important; }
+		.another_category_color_gray th a.current{border-color:#909090 !important;}
+		.another_category_color_gray h4, .another_category_color_gray h4 a { color: #737373 !important; }
+
+
+		.another_category_color_red, .another_category_color_red h4 { border-color: #F6D4D3 !important;  }
+		.another_category_color_red * { color: #E86869 !important; }
+		.another_category_color_red th a.current{border-color:#E86869 !important;}
+		.another_category_color_red h4, .another_category_color_red h4 a { color: #ED0908 !important; }
+
+
+		.another_category_color_green, .another_category_color_green h4 { border-color: #CCE7C8 !important; }
+		.another_category_color_green * { color: #64C05B !important; }
+		.another_category_color_green th a.current{border-color:#64C05B !important;}
+		.another_category_color_green h4, .another_category_color_green h4 a { color: #3EA731 !important; }
+
+
+		.another_category_color_blue, .another_category_color_blue h4 { border-color: #C8DAF2 !important; }
+		.another_category_color_blue * { color: #477FD6 !important; }
+		.another_category_color_blue th a.current{border-color:#477FD6 !important;}
+		.another_category_color_blue h4, .another_category_color_blue h4 a { color: #1960CA !important; }
+
+
+		.another_category_color_violet, .another_category_color_violet h4 { border-color: #E1CEEC !important;  }
+		.another_category_color_violet * { color:#9D64C5 !important; }
+		.another_category_color_violet th a.current{border-color:#9D64C5 !important;}
+		.another_category_color_violet h4, .another_category_color_violet h4 a { color: #7E2CB5 !important; }
+	</style>
+<script type="text/javascript">
+        
+        window.TistoryBlog = {
+            basePath: "",
+            url: "https://wsstudynote.tistory.com",
+            tistoryUrl: "https://wsstudynote.tistory.com",
+			manageUrl: 'https://wsstudynote.tistory.com/manage',
+            token: 'dyu5tDJykEIq0pwHpxRHTg=='
+        };
+        var servicePath = "";
+        var blogURL = "";
+    </script>
+
+	<script> (function() { window.orgjQuery = window.jQuery; window.jQuery = tjQuery })()</script>
+    <script type="text/javascript" defer src=https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/script/reaction/reaction-button-container.min.js?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4></script>
+    <script> (function() { window.jQuery = window.orgjQuery; delete window.orgjQuery })()</script>
+        <script type="text/javascript" src="https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/script/_/base.js?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4"></script>
+        <link rel="stylesheet" type="text/css" href="https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/style/dialog.css?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4"/>
+            <link rel="stylesheet" type="text/css" href="//t1.daumcdn.net/tistory_admin/www/style/top/font.css">
+    <link rel="stylesheet" type="text/css" href="https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/style/postBtn.css?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4"/>
+        <link rel="stylesheet" type="text/css" href="https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/style/component/tistory.css?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4" />
+        <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script></head>
+<body id="tt-body-page" class="layout-wide color-bright post-type-thumbnail paging-view-more">
+<script type="text/javascript">
+	(function() {
+		if (!window.T) {
+			window.T = {}
+		}
+		window.T.config = {"TOP_SSL_URL":"https:\/\/www.tistory.com","PREVIEW":false,"ROLE":"guest","PREV_PAGE":"\/8","NEXT_PAGE":"\/6","BLOG":{"isDormancy":false,"title":"\uc6b0\uc131\uc774\uc758 \uc815\ub9ac\ub178\ud2b8"},"NEED_COMMENT_LOGIN":false,"COMMENT_LOGIN_CONFIRM_MESSAGE":"","LOGIN_URL":"https:\/\/www.tistory.com\/auth\/login\/?redirectUrl=http%3A%2F%2Fwsstudynote.tistory.com%2F7","DEFAULT_URL":"https:\/\/wsstudynote.tistory.com","USER":{"name":null,"homepage":null},"ROLE_GROUP":"visitor","SUBSCRIPTION":{"status":"none","isConnected":false,"isProcessing":false,"isPending":false,"isWait":false,"isNone":true},"IS_LOGIN":false,"HAS_BLOG":false,"TOP_URL":"https:\/\/www.tistory.com","JOIN_URL":"https:\/\/www.tistory.com\/member\/join"};
+		window.appInfo = {"domain":"tistory.com","topUrl":"https:\/\/www.tistory.com","loginUrl":"https:\/\/www.tistory.com\/auth\/login","logoutUrl":"https:\/\/www.tistory.com\/auth\/logout"};
+
+        window.initData = {};
+        
+	})();
+</script>
+
+<script type="text/javascript" src="https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/script/blog/common.js?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4"></script>
+<div style="margin:0; padding:0; border:none; background:none; float:none; clear:none; z-index:0"></div>
+<div id="acc-nav">
+	<a href="#content">본문 바로가기</a>
+</div>
+<div id="wrap">
+	<header id="header">
+		<div class="inner">
+			<h1>
+				<a href="/">
+					
+					
+						우성이의 정리노트
+					
+				</a>
+			</h1>
+			<button type="button" class="mobile-menu"><span>메뉴</span></button>
+			<nav id="gnb">
+				<ul>		<li class="t_menu_home first">
+			<a href="/">홈</a>
+		</li>
+				<li class="t_menu_tag">
+			<a href="/tag">태그</a>
+		</li>
+				<li class="t_menu_guestbook last">
+			<a href="/guestbook">방명록</a>
+		</li>
+		</ul>
+			</nav>
+		</div>
+	</header>
+	<hr>
+	<section class="container">
+		
+		<article id="content">
+
+			
+
+			
+
+			
+
+			
+
+			<div class="inner">
+				
+
+				
+					
+					
+						<div class="hgroup">
+							<div class="category">Sensor fusion</div>
+							<h1>[우수학부생] Kalman Filter 을 이용한 자세 추정 및 모션 캡처를 이용한 실험 결과 </h1>
+							<div class="post-meta">
+								<span class="author">rladntjd</span>
+								<span class="date">2020. 2. 14. 15:23</span>
+								
+							</div>
+						</div>
+						<div class="entry-content">
+							<div class="tt_article_useless_p_margin contents_style"><p>&nbsp;- 칼만 필터를 사용할때는 state, 모델, Z 뭔지 반드시 설명 해야함</p>
+<p>&nbsp;-&nbsp; 78.5hz 가 아쉽</p>
+<p>&nbsp;- 최소 500hz 에서 law pass filter 한번 돌리고 다시 칼만을 넣으면 훨씬 더 정확해질 수 있음</p>
+<p>&nbsp;</p>
+<ol>
+<li>연구 목적</li>
+</ol>
+<p>IMU를 통해 받아들여지는 Raw Data를 KALMAN Filter를 사용하여 noise 제거 및 정확도 향상</p>
+<ol start="2">
+<li>연구 내용</li>
+</ol>
+<p>IMU 센서는 자이로 센서, 가속도 센서, 지자기 센서로 구분 된다. IMU 센서는 Body Frame 에서의 값들을 측정한다. 자이로 센서는 각속도를 측정하는 센서이다. 각속도를 적분하는 방식으로 자세를 계산할 수 있다. 하지만 오차가 함께 계산이 된다는 단점이 있다. 가속도 센서는 센서 주변 외력에 의한 가속도를 측정하는 센서이다. 가속도 센서는 &lt;그림2&gt;와 같이 지구 중력을 계산함으로써 자세를 측정할 수 있다. 하지만 지구 중력 뿐만 아니라 Body 자체의 외력도 함께 계산 된다는 단점이 있다. 지자기 센서는 센서 주변의 자기장을 측정하는 센서 이다. &lt;그림3&gt;과 같이 지구의 자북을 계산하여 자세를 측정 할 수 있다. 하지만 지구 자기장뿐만 아니라 주변의 다른 자기장에도 영향을 많이 받는다는 단점이 있다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00001.bmp" data-origin-width="262" data-origin-height="283" width="199" height="214"><span data-url='https://blog.kakaocdn.net/dn/TdwD7/btqB2uDRoqV/u9ix6UT36jK4qqKdLK9cV0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/TdwD7/btqB2uDRoqV/u9ix6UT36jK4qqKdLK9cV0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FTdwD7%2FbtqB2uDRoqV%2Fu9ix6UT36jK4qqKdLK9cV0%2Fimg.bmp' data-filename="image00001.bmp" data-origin-width="262" data-origin-height="283" width="199" height="214"></span></figure></p>
+<p>그림 가속도 센서 자세 측정</p>
+<p><figure class='imageblock alignCenter' data-filename="image00002.bmp" data-origin-width="256" data-origin-height="196"><span data-url='https://blog.kakaocdn.net/dn/DqfFr/btqB0fVsAeU/pqvsyTlLNY2Lw05R1O1JB0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/DqfFr/btqB0fVsAeU/pqvsyTlLNY2Lw05R1O1JB0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FDqfFr%2FbtqB0fVsAeU%2FpqvsyTlLNY2Lw05R1O1JB0%2Fimg.bmp' data-filename="image00002.bmp" data-origin-width="256" data-origin-height="196"></span></figure></p>
+<p>그림 지자기 센서 자세 측정</p>
+<p>정지상태일 때 자이로로 측정된 자세의 쿼터니언 x y z 값을 보면 &lt;그림4&gt;와 같다.</p>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/xfuhb/btqB0f8XudH/q4bAdA46MENj6BakdZ8NH0/img.bmp" data-lightbox="lightbox" data-filename="image00003.bmp" data-origin-width="603" data-origin-height="255" style="width: 53.1184%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/xfuhb/btqB0f8XudH/q4bAdA46MENj6BakdZ8NH0/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fxfuhb%2FbtqB0f8XudH%2Fq4bAdA46MENj6BakdZ8NH0%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/ZtP31/btqB1mzOqz9/Wz86vXF3kD0w5J2HUABkUK/img.bmp" data-lightbox="lightbox" data-filename="image00004.bmp" data-origin-width="519" data-origin-height="255" style="width: 45.7188%;"><img src='https://blog.kakaocdn.net/dn/ZtP31/btqB1mzOqz9/Wz86vXF3kD0w5J2HUABkUK/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FZtP31%2FbtqB1mzOqz9%2FWz86vXF3kD0w5J2HUABkUK%2Fimg.bmp"></span></div><figcaption>자이로 에러 누적 그래프</figcaption></figure><figure class='imageblock floatRight' width="152" data-origin-width="359" data-origin-height="109"><span data-url='https://blog.kakaocdn.net/dn/CW4jk/btqB1mNjjwo/ms7dkkkV3NFda9ft3KP3KK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/CW4jk/btqB1mNjjwo/ms7dkkkV3NFda9ft3KP3KK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FCW4jk%2FbtqB1mNjjwo%2Fms7dkkkV3NFda9ft3KP3KK%2Fimg.bmp' width="152" data-origin-width="359" data-origin-height="109"></span></figure></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>오차가 누적이 되어가는 모습을 볼 수 있다. 가속도와 지자기 센서로 측정한 자세 쿼터니언의 x y z 값은 &lt;그림 5&gt; 와 같다. 노이즈의 크기가 0.01 정도로 심하게 있는 것을 볼 수 있다. 오차의 누적과 노이즈로 IMU 의 Raw Data를 자세 측정에 그대로 쓰기는 어렵다.</p>
+<p>그림 자이로로 측정한 자세 쿼터니언</p>
+<p>그림 가속도와 지자기로 측정한 자세 쿼터니언</p>
+<p>&nbsp;</p>
+<p>따라서 오차와 노이즈를 줄일 방안이 칼만 필터를 이용한 센서 융합이다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00006.bmp" data-origin-width="924" data-origin-height="295" width="606" height="193"><span data-url='https://blog.kakaocdn.net/dn/bP56fd/btqB0fVsAM8/qXWExta9S4GC5NQsOj3spK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bP56fd/btqB0fVsAM8/qXWExta9S4GC5NQsOj3spK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbP56fd%2FbtqB0fVsAM8%2FqXWExta9S4GC5NQsOj3spK%2Fimg.bmp' data-filename="image00006.bmp" data-origin-width="924" data-origin-height="295" width="606" height="193"></span></figure></p>
+<p>칼만 필터는 상태 예측(state prediction)과 측정 업데이트(measurement update)를 반복적으로 수행하며 자세를 계산하는 과정이다. 칼만 필터의 단계를 나타내면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00007.bmp" data-origin-width="927" data-origin-height="353" width="568" height="216"><span data-url='https://blog.kakaocdn.net/dn/czMaBj/btqB0fulc9M/hroyLExEf7gqTgnvtNmYrK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/czMaBj/btqB0fulc9M/hroyLExEf7gqTgnvtNmYrK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FczMaBj%2FbtqB0fulc9M%2FhroyLExEf7gqTgnvtNmYrK%2Fimg.bmp' data-filename="image00007.bmp" data-origin-width="927" data-origin-height="353" width="568" height="216"></span></figure></p>
+<p>칼만 필터에서 측정값을 Z 예측값을 X 으로 사용된다. 칼만 필터에서는 칼만 Gain을 계산하게 되어 추정값 계산에서 측정값과 예측값의 비율을 결정하게 된다. 만일 칼만 Gain이 크다면 측정값이 큰 비율로 들어가게 되고, 칼만 Gain이 작다면 예측값이 큰 비율로 들어가게 된다.</p>
+<p>칼만 필터를 사용할 때 쿼터니언을 기반으로 하였습니다. 오일러 각도로 하면 Gimbal Lock 문제가 발생 하므로 이를 방지 하기 위해 쿼터니언을 사용하였다.</p>
+<p>초기 상태는 움직이지 않은 정지한 고정된 상태이기 때문에 값을 아래와 같이 설정하였다. 값은 실험에 의해 나왔던 표준편차 중에서 가장 큰 값을 기준으로 정하였다. 그리하여 는 단위행렬에 0.001을 곱한 값으로 설정하였다.</p>
+<p>측정값인 Z는 이다. 따라서 H는 아래와 같다.</p>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/mKfYJ/btqB2IIEngt/6EUW5aL0L63D1o7GqNBidk/img.bmp" data-lightbox="lightbox" data-filename="image00008.bmp" data-origin-width="815" data-origin-height="214" width="583" height="153" style="width: 65.3159%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/mKfYJ/btqB2IIEngt/6EUW5aL0L63D1o7GqNBidk/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FmKfYJ%2FbtqB2IIEngt%2F6EUW5aL0L63D1o7GqNBidk%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/b8X7zb/btqB0gfHHxa/8pP7bcWRbKitZqdtLhZfG1/img.bmp" data-lightbox="lightbox" data-filename="image00009.bmp" data-origin-width="258" data-origin-height="132" width="156" height="79" style="width: 33.5213%;"><img src='https://blog.kakaocdn.net/dn/b8X7zb/btqB0gfHHxa/8pP7bcWRbKitZqdtLhZfG1/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb8X7zb%2FbtqB0gfHHxa%2F8pP7bcWRbKitZqdtLhZfG1%2Fimg.bmp"></span></div></figure></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Q는 자이로로 계산된 쿼터니언의 표준편차의 제곱을 하였고 R은 가속도와 지자기 센서로 계산된 쿼터니언의 표준편차의 제곱으로 계산되었습니다. 값은 아래와 같다.</p>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/bR7Z4c/btqB0fOHgQ8/6uCFksqmaf0Y4NtW8PrX21/img.bmp" data-lightbox="lightbox" data-filename="image00010.bmp" data-origin-width="518" data-origin-height="126" style="width: 50.3204%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/bR7Z4c/btqB0fOHgQ8/6uCFksqmaf0Y4NtW8PrX21/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbR7Z4c%2FbtqB0fOHgQ8%2F6uCFksqmaf0Y4NtW8PrX21%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/KBaC5/btqBZMeRCIj/ii1QckwwKVhuhVCy6bbNA1/img.bmp" data-lightbox="lightbox" data-filename="image00011.bmp" data-origin-width="547" data-origin-height="138" style="width: 48.5169%;"><img src='https://blog.kakaocdn.net/dn/KBaC5/btqBZMeRCIj/ii1QckwwKVhuhVCy6bbNA1/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FKBaC5%2FbtqBZMeRCIj%2Fii1QckwwKVhuhVCy6bbNA1%2Fimg.bmp"></span></div></figure></p>
+<p>자세를</p>
+<p><figure class='imageblock alignCenter' data-origin-width="399" data-origin-height="144"><span data-url='https://blog.kakaocdn.net/dn/Zlx09/btqB2vbIaBC/9Djkvr4yszbupoOYomc2bk/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/Zlx09/btqB2vbIaBC/9Djkvr4yszbupoOYomc2bk/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FZlx09%2FbtqB2vbIaBC%2F9Djkvr4yszbupoOYomc2bk%2Fimg.bmp' data-origin-width="399" data-origin-height="144"></span></figure></p>
+<p>라고 한다면 아래와 같이 표현할 수 있다.</p>
+<p>위의 식을 칼만 필터의 예측값 계산 과정에서 있는 식인 와 같은 형태로 변환하면 아래와 같다.</p>
+<p>따라서</p>
+<p><figure class='imageblock alignCenter' data-filename="image00014.bmp" data-origin-width="564" data-origin-height="119"><span data-url='https://blog.kakaocdn.net/dn/cEddlJ/btqB2HXhB3R/SVbHyiw9kSrmfFGhCP7TsK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/cEddlJ/btqB2HXhB3R/SVbHyiw9kSrmfFGhCP7TsK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcEddlJ%2FbtqB2HXhB3R%2FSVbHyiw9kSrmfFGhCP7TsK%2Fimg.bmp' data-filename="image00014.bmp" data-origin-width="564" data-origin-height="119"></span></figure><figure class='imageblock alignCenter' data-filename="image00015.bmp" data-origin-width="497" data-origin-height="155"><span data-url='https://blog.kakaocdn.net/dn/bwtn33/btqB0e998Dl/3h0SITBX46s6yBaql6GNQ1/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bwtn33/btqB0e998Dl/3h0SITBX46s6yBaql6GNQ1/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fbwtn33%2FbtqB0e998Dl%2F3h0SITBX46s6yBaql6GNQ1%2Fimg.bmp' data-filename="image00015.bmp" data-origin-width="497" data-origin-height="155"></span></figure><figure class='imageblock alignCenter' data-filename="image00013.bmp" data-origin-width="264" data-origin-height="106" width="159" height="64"><span data-url='https://blog.kakaocdn.net/dn/d9apkF/btqB1ZD5sQl/mRVsrvbKb5raAQ4jXfL7Ek/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/d9apkF/btqB1ZD5sQl/mRVsrvbKb5raAQ4jXfL7Ek/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fd9apkF%2FbtqB1ZD5sQl%2FmRVsrvbKb5raAQ4jXfL7Ek%2Fimg.bmp' data-filename="image00013.bmp" data-origin-width="264" data-origin-height="106" width="159" height="64"></span></figure></p>
+<p>가 된다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00016.bmp" data-origin-width="274" data-origin-height="64"><span data-url='https://blog.kakaocdn.net/dn/AqJRm/btqB2IaO5Zu/cQGhqvvREOPDW1eZ4E8nQ0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/AqJRm/btqB2IaO5Zu/cQGhqvvREOPDW1eZ4E8nQ0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FAqJRm%2FbtqB2IaO5Zu%2FcQGhqvvREOPDW1eZ4E8nQ0%2Fimg.bmp' data-filename="image00016.bmp" data-origin-width="274" data-origin-height="64"></span></figure></p>
+<p>가속도 센서와 지자기 센서로 측정값인 Z를 계산하게 된다.<br />가속도 센서로 X 축과 Y 축 회전을 구할 수 있고, 지자기 센서로 Z 축 회전을 구하게 된다.<br />가속도 센서로 X 축과 Y 축의 회전을 구하는 식은 아래와 같다.</p>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/nWBf2/btqBZgOi14o/MMbteAo73iA0WIcf2gGvk0/img.bmp" data-lightbox="lightbox" data-filename="image00018.bmp" data-origin-width="653" data-origin-height="132" width="505" height="102" style="width: 60.2194%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/nWBf2/btqBZgOi14o/MMbteAo73iA0WIcf2gGvk0/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FnWBf2%2FbtqBZgOi14o%2FMMbteAo73iA0WIcf2gGvk0%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/bRxjzo/btqB2I2Xi6e/AkOaXNhRX7jCjLevJuJKAK/img.bmp" data-lightbox="lightbox" data-filename="image00017.bmp" data-origin-width="552" data-origin-height="174" style="width: 38.6178%;"><img src='https://blog.kakaocdn.net/dn/bRxjzo/btqB2I2Xi6e/AkOaXNhRX7jCjLevJuJKAK/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbRxjzo%2FbtqB2I2Xi6e%2FAkOaXNhRX7jCjLevJuJKAK%2Fimg.bmp"></span></div></figure></p>
+<p>지자기 센서는 주변의 자기장에 영향을 많이 받는다.</p>
+<p>따라서 지자기 센서 보정 과정을 거쳐야 한다. 지자기 센서의 주변 노이즈는 Hard Ironing과 Soft Ironing으로 분류할 수 있다. Hard Ironing을 2차원에서 표현하면 아래와 같다.</p>
+<p>&nbsp;</p>
+<p><figure class='imageblock alignCenter' data-filename="image00019.bmp" data-origin-width="646" data-origin-height="294" width="479" height="218"><span data-url='https://blog.kakaocdn.net/dn/HuCLS/btqB2vCLSME/o8HsUjpzNpMPT20jBmk1jK/img.bmp' data-lightbox='lightbox' data-alt='hard ironing'><img src='https://blog.kakaocdn.net/dn/HuCLS/btqB2vCLSME/o8HsUjpzNpMPT20jBmk1jK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FHuCLS%2FbtqB2vCLSME%2Fo8HsUjpzNpMPT20jBmk1jK%2Fimg.bmp' data-filename="image00019.bmp" data-origin-width="646" data-origin-height="294" width="479" height="218"></span><figcaption>hard ironing</figcaption></figure></p>
+<p>센서 주변에 부착된 일정한 자기장에 의하여 distortion이 발생 하게 된다. 그리하여 원의 중심과 센서의 위치와 차이가 나게 되는 것이다.<br />Soft Ironing을 2차원에서 표현하면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' width="450" height="196" data-origin-width="637" data-origin-height="277"><span data-url='https://blog.kakaocdn.net/dn/csNh8w/btqBZM0eAax/WP7ZNoqflFzKyzrhucJEXk/img.bmp' data-lightbox='lightbox' data-alt='soft ironing'><img src='https://blog.kakaocdn.net/dn/csNh8w/btqBZM0eAax/WP7ZNoqflFzKyzrhucJEXk/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcsNh8w%2FbtqBZM0eAax%2FWP7ZNoqflFzKyzrhucJEXk%2Fimg.bmp' width="450" height="196" data-origin-width="637" data-origin-height="277"></span><figcaption>soft ironing</figcaption></figure></p>
+<p>센서 주변의 일정하지 않은 자기장들에 의해 distortion이 발생 하게 된다. 그리하여 원으로 나와야 하는 주변의 자기장이 타원형으로 나오게 된다.<br />Hard Ironing과 Soft Ironing을 보정해주기 위해서는 지자기 센서의 각축에서 측정된 최댓값과 최솟값을 사용하여 보정할 수 있다. 식은 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00021.bmp" data-origin-width="1148" data-origin-height="227" width="744" height="147"><span data-url='https://blog.kakaocdn.net/dn/u3jP1/btqB1ZD5tg5/gXhzZqLEEpcjUvSsqUS9nK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/u3jP1/btqB1ZD5tg5/gXhzZqLEEpcjUvSsqUS9nK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fu3jP1%2FbtqB1ZD5tg5%2FgXhzZqLEEpcjUvSsqUS9nK%2Fimg.bmp' data-filename="image00021.bmp" data-origin-width="1148" data-origin-height="227" width="744" height="147"></span></figure></p>
+<p>보정된 지자기 센서의 값을 사용하여 Z 축 회전을 구할 수 있다. 먼저 보정된 지자기 센서의 값에서 가속도 센서로 구해진 X축과 Y 축 회전의 역회전을 취한다. 역회전 된 값을 l이라 한다면 식은 아래와 같다.</p>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/dygFch/btqB1ZD5tAR/pGIEdi2Ksy9Vkwyh38kmSK/img.bmp" data-lightbox="lightbox" data-filename="image00022.bmp" data-origin-width="390" data-origin-height="310" width="224" height="178" style="width: 36.1225%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/dygFch/btqB1ZD5tAR/pGIEdi2Ksy9Vkwyh38kmSK/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdygFch%2FbtqB1ZD5tAR%2FpGIEdi2Ksy9Vkwyh38kmSK%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/dcDSOZ/btqB2HXhDxH/9wkcXAmX6wZ5DqkwhwT3D1/img.bmp" data-lightbox="lightbox" data-filename="image00023.bmp" data-origin-width="581" data-origin-height="266" style="width: 62.7147%;"><img src='https://blog.kakaocdn.net/dn/dcDSOZ/btqB2HXhDxH/9wkcXAmX6wZ5DqkwhwT3D1/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdcDSOZ%2FbtqB2HXhDxH%2F9wkcXAmX6wZ5DqkwhwT3D1%2Fimg.bmp"></span></div></figure></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><figure class='imageblock alignCenter' data-origin-width="584" data-origin-height="168"><span data-url='https://blog.kakaocdn.net/dn/bFJwtJ/btqB11IGOdV/kFCBKib9fVm9tKIRwuayWK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bFJwtJ/btqB11IGOdV/kFCBKib9fVm9tKIRwuayWK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbFJwtJ%2FbtqB11IGOdV%2FkFCBKib9fVm9tKIRwuayWK%2Fimg.bmp' data-origin-width="584" data-origin-height="168"></span></figure></p>
+<p>&nbsp;</p>
+<p>따라서 Z 축의 회전을 쿼터니언으로 나타내면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00016.bmp" data-origin-width="274" data-origin-height="64"><span data-url='https://blog.kakaocdn.net/dn/M5kYu/btqB1nyIGwt/fgw8cdUcNrJf5Mzkc9NhtK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/M5kYu/btqB1nyIGwt/fgw8cdUcNrJf5Mzkc9NhtK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FM5kYu%2FbtqB1nyIGwt%2Ffgw8cdUcNrJf5Mzkc9NhtK%2Fimg.bmp' data-filename="image00016.bmp" data-origin-width="274" data-origin-height="64"></span></figure></p>
+<p>칼만 필터를 사용하여 구한 자세 쿼터니언의 정확성을 알아보기 위해 모션 캡처 장비를 사용하여 다양한 상황에서 자세를 계산하였다. &lt;그림8&gt;, &lt;그림10&gt;과 같이 마커가 Rigid Body에 6개 부착되어 있습니다. &lt;그림 7&gt;, &lt;그림9&gt;와 같이 모션 캡처 카메라 4대가 Rigid Body의 마커들을 인식하여 자세 쿼터니언을 알 수 있다.</p>
+<p>&nbsp;</p>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/FQ56x/btqB1mT9s3B/IgKJkaTl7pq3SUVCsrxue0/img.bmp" data-lightbox="lightbox" data-filename="image00025.bmp" data-origin-width="530" data-origin-height="327" style="width: 52.9128%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/FQ56x/btqB1mT9s3B/IgKJkaTl7pq3SUVCsrxue0/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FFQ56x%2FbtqB1mT9s3B%2FIgKJkaTl7pq3SUVCsrxue0%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/cG7fiI/btqB1GreILa/u3IfzToveb9uzMHHEThvn0/img.bmp" data-lightbox="lightbox" data-filename="image00026.bmp" data-origin-width="460" data-origin-height="327" style="width: 45.9244%;"><img src='https://blog.kakaocdn.net/dn/cG7fiI/btqB1GreILa/u3IfzToveb9uzMHHEThvn0/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcG7fiI%2FbtqB1GreILa%2Fu3IfzToveb9uzMHHEThvn0%2Fimg.bmp"></span></div></figure><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/djn9Fu/btqB1bLZd2Z/2jfHKd4krZiBJvdOvGdx9k/img.bmp" data-lightbox="lightbox" data-filename="image00027.bmp" data-origin-width="421" data-origin-height="280" style="width: 49.5067%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/djn9Fu/btqB1bLZd2Z/2jfHKd4krZiBJvdOvGdx9k/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fdjn9Fu%2FbtqB1bLZd2Z%2F2jfHKd4krZiBJvdOvGdx9k%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/U9sNL/btqB1HKqi61/laQH04EvR9xkWka6SmkRkk/img.bmp" data-lightbox="lightbox" data-filename="image00028.bmp" data-origin-width="421" data-origin-height="281" style="width: 49.3305%;"><img src='https://blog.kakaocdn.net/dn/U9sNL/btqB1HKqi61/laQH04EvR9xkWka6SmkRkk/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FU9sNL%2FbtqB1HKqi61%2FlaQH04EvR9xkWka6SmkRkk%2Fimg.bmp"></span></div></figure></p>
+<p>&nbsp;</p>
+<p>위와 같이 모션 캡처 장치를 설치하고 중앙에 IMU 센서를 위치시킨 후 실험을 진행하였다.</p>
+<p>실험은</p>
+<ul style="list-style-type: disc;" data-ke-list-type="disc">
+<li><br />&nbsp;X 축 회전</li>
+<li><br />&nbsp;Y 축 회전</li>
+<li><br />&nbsp;Z 축 회전</li>
+<li><br />&nbsp;원형 궤도와 Z 축 회전</li>
+<li><br />y = x y = -x 축으로 회전</li>
+</ul>
+<p><br />이렇게 5가지로 실험하여 모션 캡처와 비교 하였다. 또한 22분 30초 동안 가만히 있었을 때 값이 어떻게 나오는지 실험을 진행하였다.</p>
+<p>실험의 오차를 구하는 방법은, 두 쿼터니언이 같다면 아래와 같이 나와야 한다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00029.bmp" data-origin-width="381" data-origin-height="65"><span data-url='https://blog.kakaocdn.net/dn/3sHyv/btqB0fulenh/hbkHkiLGKokiGQdGNjKy61/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/3sHyv/btqB0fulenh/hbkHkiLGKokiGQdGNjKy61/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F3sHyv%2FbtqB0fulenh%2FhbkHkiLGKokiGQdGNjKy61%2Fimg.bmp' data-filename="image00029.bmp" data-origin-width="381" data-origin-height="65"></span></figure></p>
+<p>하지만 두 쿼터니언이 다르다면</p>
+<p><figure class='imageblock alignCenter' data-filename="image00030.bmp" data-origin-width="365" data-origin-height="53"><span data-url='https://blog.kakaocdn.net/dn/NEeoh/btqB11u9GNX/yFkNKxtz2KjXTDSqdK9MAK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/NEeoh/btqB11u9GNX/yFkNKxtz2KjXTDSqdK9MAK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FNEeoh%2FbtqB11u9GNX%2FyFkNKxtz2KjXTDSqdK9MAK%2Fimg.bmp' data-filename="image00030.bmp" data-origin-width="365" data-origin-height="53"></span></figure></p>
+<p>X Y Z 의 값에 0 이 아닌 값이 나오게 된다. (1-w), X, Y, Z의 값의 제곱 평균 제곱근(RMS)을 구하여 이를 오차로 측정하였다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00031.bmp" data-origin-width="467" data-origin-height="77"><span data-url='https://blog.kakaocdn.net/dn/bHhpsz/btqB1mzOtuJ/osBv4RIWHz1xmTf4ifxDc1/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bHhpsz/btqB1mzOtuJ/osBv4RIWHz1xmTf4ifxDc1/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbHhpsz%2FbtqB1mzOtuJ%2FosBv4RIWHz1xmTf4ifxDc1%2Fimg.bmp' data-filename="image00031.bmp" data-origin-width="467" data-origin-height="77"></span></figure></p>
+<p>이렇게 구해진 의 크기를 q로 정의하였다. q의 값 비교를 통해 오차를 측정할 수 있다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00032.bmp" data-origin-width="343" data-origin-height="60"><span data-url='https://blog.kakaocdn.net/dn/cX7JHv/btqB0e3fhX5/leoasRGjQhxbxODDGFikF0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/cX7JHv/btqB0e3fhX5/leoasRGjQhxbxODDGFikF0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcX7JHv%2FbtqB0e3fhX5%2FleoasRGjQhxbxODDGFikF0%2Fimg.bmp' data-filename="image00032.bmp" data-origin-width="343" data-origin-height="60"></span></figure></p>
+<p>또한 칼만 필터로 구한 Roll, Pitch, Yaw와 모션 캡처로 구한 Roll, Pitch, Yaw 값의 차를 제곱 평균 제곱근(RMS)을 구하였다. 또한 움직이는 상황에서 칼만 필터로 구현된 자세 쿼터니언 값이 모션 캡처로 구현된 값보다 어느 정도 느리게 값이 나오는지 측정하였다.</p>
+<ul style="list-style-type: square;" data-ke-list-type="square">
+<li>&nbsp;X 축으로 회전한 결과</li>
+</ul>
+<p>&nbsp;</p>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/c1s4hJ/btqBZfIE9Sk/KjLvlibsAJCAMnCLOM4SkK/img.bmp" data-lightbox="lightbox" data-filename="image00033.bmp" data-origin-width="585" data-origin-height="426" style="width: 44.8472%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/c1s4hJ/btqBZfIE9Sk/KjLvlibsAJCAMnCLOM4SkK/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fc1s4hJ%2FbtqBZfIE9Sk%2FKjLvlibsAJCAMnCLOM4SkK%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/I2Uco/btqB1cKTGdo/G6HIujRpONasIGPlERwI0k/img.bmp" data-lightbox="lightbox" data-filename="image00034.bmp" data-origin-width="982" data-origin-height="594" style="width: 53.99%;"><img src='https://blog.kakaocdn.net/dn/I2Uco/btqB1cKTGdo/G6HIujRpONasIGPlERwI0k/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FI2Uco%2FbtqB1cKTGdo%2FG6HIujRpONasIGPlERwI0k%2Fimg.bmp"></span></div></figure></p>
+<p>위의 3축이 모션 캡처로 구한 자세 쿼터니언이고, 아래 3축이 칼만 필터로 구한 자세 쿼터니언 이다.</p>
+<p>X 축으로 회전할 때 자세 쿼터니언의 x값을 그래프로 표현하면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00035.bmp" data-origin-width="977" data-origin-height="305"><span data-url='https://blog.kakaocdn.net/dn/bjEz0C/btqB11aRYgK/OlvrURDYJzg7qIWFPepTj0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bjEz0C/btqB11aRYgK/OlvrURDYJzg7qIWFPepTj0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbjEz0C%2FbtqB11aRYgK%2FOlvrURDYJzg7qIWFPepTj0%2Fimg.bmp' data-filename="image00035.bmp" data-origin-width="977" data-origin-height="305"></span></figure><figure class='imageblock alignCenter' data-filename="image00036.bmp" data-origin-width="381" data-origin-height="73" width="256" height="49"><span data-url='https://blog.kakaocdn.net/dn/bM05dR/btqB1bLZelF/IUvicpYvzYJl9JvHvzAkek/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bM05dR/btqB1bLZelF/IUvicpYvzYJl9JvHvzAkek/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbM05dR%2FbtqB1bLZelF%2FIUvicpYvzYJl9JvHvzAkek%2Fimg.bmp' data-filename="image00036.bmp" data-origin-width="381" data-origin-height="73" width="256" height="49"></span></figure></p>
+<p>쿼터니언의 오차를 그래프로 그리면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00037.bmp" data-origin-width="923" data-origin-height="381" width="598" height="247"><span data-url='https://blog.kakaocdn.net/dn/cR0UBh/btqB1HXYBwl/DH4xzAy4ODqTcacQpwcLU0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/cR0UBh/btqB1HXYBwl/DH4xzAy4ODqTcacQpwcLU0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcR0UBh%2FbtqB1HXYBwl%2FDH4xzAy4ODqTcacQpwcLU0%2Fimg.bmp' data-filename="image00037.bmp" data-origin-width="923" data-origin-height="381" width="598" height="247"></span></figure><figure class='imageblock alignCenter' data-origin-width="360" data-origin-height="111"><span data-url='https://blog.kakaocdn.net/dn/kD48K/btqB1ms1TIu/KO03GrQ20SpddTAj0rkva0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/kD48K/btqB1ms1TIu/KO03GrQ20SpddTAj0rkva0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FkD48K%2FbtqB1ms1TIu%2FKO03GrQ20SpddTAj0rkva0%2Fimg.bmp' data-origin-width="360" data-origin-height="111"></span></figure></p>
+<p>오차 roll, pitch, yaw, q0, q1, q2, q3, q 값의 RMS를 구하면 아래와 같다.</p>
+<p>　</p>
+<p><figure class='imageblock alignCenter' data-origin-width="0" data-origin-height="0"><span data-url='https://blog.kakaocdn.net/dn/ca7ELO/btqB1Z5cvU2/cgOgK6Bz8r9RbKawnHPJBK/img.png' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/ca7ELO/btqB1Z5cvU2/cgOgK6Bz8r9RbKawnHPJBK/img.png' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fca7ELO%2FbtqB1Z5cvU2%2FcgOgK6Bz8r9RbKawnHPJBK%2Fimg.png' data-origin-width="0" data-origin-height="0"></span></figure></p>
+<ul style="list-style-type: square;" data-ke-list-type="square">
+<li>&nbsp;Y 축으로 회전한 결과</li>
+</ul>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/AYp4M/btqB1cKTGZa/edLPqRMMsAnmk9KLQXkuK1/img.bmp" data-lightbox="lightbox" data-filename="image00040.bmp" data-origin-width="401" data-origin-height="338" style="width: 45.8111%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/AYp4M/btqB1cKTGZa/edLPqRMMsAnmk9KLQXkuK1/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FAYp4M%2FbtqB1cKTGZa%2FedLPqRMMsAnmk9KLQXkuK1%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/po6jM/btqB1cEbKVo/lIx2UdBd8ER4kyhrOIPGBK/img.bmp" data-lightbox="lightbox" data-filename="image00039.bmp" data-origin-width="585" data-origin-height="426" style="width: 53.0261%;"><img src='https://blog.kakaocdn.net/dn/po6jM/btqB1cEbKVo/lIx2UdBd8ER4kyhrOIPGBK/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fpo6jM%2FbtqB1cEbKVo%2FlIx2UdBd8ER4kyhrOIPGBK%2Fimg.bmp"></span></div></figure></p>
+<p>&nbsp;</p>
+<p>위의 3축이 모션 캡처로 구한 자세 쿼터니언이고, 아래 3축이 칼만 필터로 구한 자세 쿼터니언 이다.</p>
+<p>Y 축으로 회전한 자세 쿼터니언의 Y값을 그래프로 그리면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00041.bmp" data-origin-width="1150" data-origin-height="319"><span data-url='https://blog.kakaocdn.net/dn/bhMpPV/btqB2HXhDOp/h7RA2ohDEBC1xLctugoRKk/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bhMpPV/btqB2HXhDOp/h7RA2ohDEBC1xLctugoRKk/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbhMpPV%2FbtqB2HXhDOp%2Fh7RA2ohDEBC1xLctugoRKk%2Fimg.bmp' data-filename="image00041.bmp" data-origin-width="1150" data-origin-height="319"></span></figure><figure class='imageblock alignCenter' data-filename="image00042.bmp" data-origin-width="348" data-origin-height="62" width="213" height="38"><span data-url='https://blog.kakaocdn.net/dn/cKmDOQ/btqB2vpfnj6/TBDeRY6PginKMs7dZLZdb0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/cKmDOQ/btqB2vpfnj6/TBDeRY6PginKMs7dZLZdb0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcKmDOQ%2FbtqB2vpfnj6%2FTBDeRY6PginKMs7dZLZdb0%2Fimg.bmp' data-filename="image00042.bmp" data-origin-width="348" data-origin-height="62" width="213" height="38"></span></figure></p>
+<p>쿼터니언의 오차를 그래프로 그리면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00043.bmp" data-origin-width="937" data-origin-height="383"><span data-url='https://blog.kakaocdn.net/dn/bigY1S/btqB1diKxt8/z0xAgFCAoS0XSHg9tEdgg0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bigY1S/btqB1diKxt8/z0xAgFCAoS0XSHg9tEdgg0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbigY1S%2FbtqB1diKxt8%2Fz0xAgFCAoS0XSHg9tEdgg0%2Fimg.bmp' data-filename="image00043.bmp" data-origin-width="937" data-origin-height="383"></span></figure><figure class='imageblock alignCenter' data-filename="image00044.bmp" data-origin-width="360" data-origin-height="111" width="272" height="84"><span data-url='https://blog.kakaocdn.net/dn/OTpey/btqB2uRovpe/4dnu9cKWOikH35zCJlgXb1/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/OTpey/btqB2uRovpe/4dnu9cKWOikH35zCJlgXb1/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FOTpey%2FbtqB2uRovpe%2F4dnu9cKWOikH35zCJlgXb1%2Fimg.bmp' data-filename="image00044.bmp" data-origin-width="360" data-origin-height="111" width="272" height="84"></span></figure></p>
+<p>오차 roll, pitch, yaw, q0, q1, q2, q3, q 값의 RMS를 구하면 아래와 같다.</p>
+<p>　</p>
+<p><figure class='imageblock alignCenter' data-origin-width="0" data-origin-height="0"><span data-url='https://blog.kakaocdn.net/dn/bzT4E0/btqBZf9BGcA/W2J7Eumj30eitKHBJSzCA0/img.png' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bzT4E0/btqBZf9BGcA/W2J7Eumj30eitKHBJSzCA0/img.png' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbzT4E0%2FbtqBZf9BGcA%2FW2J7Eumj30eitKHBJSzCA0%2Fimg.png' data-origin-width="0" data-origin-height="0"></span></figure></p>
+<p>&nbsp;</p>
+<ul style="list-style-type: square;" data-ke-list-type="square">
+<li>&nbsp;Z 축으로 회전한 결과</li>
+</ul>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/doVrXp/btqB0gmvOAP/kd6uYjXgOoi3QsbNroygbk/img.bmp" data-lightbox="lightbox" data-filename="image00045.bmp" data-origin-width="585" data-origin-height="426" style="width: 55.1348%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/doVrXp/btqB0gmvOAP/kd6uYjXgOoi3QsbNroygbk/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdoVrXp%2FbtqB0gmvOAP%2Fkd6uYjXgOoi3QsbNroygbk%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/YOlHj/btqB2HXhD7s/NGzAYm8hHAmWlQsokrOcI1/img.bmp" data-lightbox="lightbox" data-filename="image00046.bmp" data-origin-width="369" data-origin-height="339" style="width: 43.7025%;"><img src='https://blog.kakaocdn.net/dn/YOlHj/btqB2HXhD7s/NGzAYm8hHAmWlQsokrOcI1/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FYOlHj%2FbtqB2HXhD7s%2FNGzAYm8hHAmWlQsokrOcI1%2Fimg.bmp"></span></div></figure></p>
+<p>위의 3축이 모션 캡처로 구한 자세 쿼터니언이고, 아래 3축이 칼만 필터로 구한 자세 쿼터니언 이다.</p>
+<p>Z 축으로 회전한 자세 쿼터니언의 Z값을 그래프로 그리면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00047.bmp" data-origin-width="1100" data-origin-height="320"><span data-url='https://blog.kakaocdn.net/dn/BffrV/btqBZM61Zgn/i2xukkXk3girWBZaeGgH20/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/BffrV/btqBZM61Zgn/i2xukkXk3girWBZaeGgH20/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FBffrV%2FbtqBZM61Zgn%2Fi2xukkXk3girWBZaeGgH20%2Fimg.bmp' data-filename="image00047.bmp" data-origin-width="1100" data-origin-height="320"></span></figure><figure class='imageblock alignCenter' data-filename="image00048.bmp" data-origin-width="349" data-origin-height="78" width="260" height="58"><span data-url='https://blog.kakaocdn.net/dn/bKFSz6/btqB2Iol1OC/5nuYsavNVBPkqe4E3Eahu0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bKFSz6/btqB2Iol1OC/5nuYsavNVBPkqe4E3Eahu0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbKFSz6%2FbtqB2Iol1OC%2F5nuYsavNVBPkqe4E3Eahu0%2Fimg.bmp' data-filename="image00048.bmp" data-origin-width="349" data-origin-height="78" width="260" height="58"></span></figure></p>
+<p>쿼터니언의 오차를 그래프로 그리면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00049.bmp" data-origin-width="921" data-origin-height="382"><span data-url='https://blog.kakaocdn.net/dn/b8QDfW/btqB10psDum/6gSnXeqGr7YEwbmYzgnwf1/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/b8QDfW/btqB10psDum/6gSnXeqGr7YEwbmYzgnwf1/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb8QDfW%2FbtqB10psDum%2F6gSnXeqGr7YEwbmYzgnwf1%2Fimg.bmp' data-filename="image00049.bmp" data-origin-width="921" data-origin-height="382"></span></figure><figure class='imageblock alignCenter' data-filename="image00050.bmp" data-origin-width="360" data-origin-height="111" width="240" height="74"><span data-url='https://blog.kakaocdn.net/dn/dwtKqh/btqBZrB3xND/UgQYwiuHGiTAdZxMGPaDG0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/dwtKqh/btqBZrB3xND/UgQYwiuHGiTAdZxMGPaDG0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdwtKqh%2FbtqBZrB3xND%2FUgQYwiuHGiTAdZxMGPaDG0%2Fimg.bmp' data-filename="image00050.bmp" data-origin-width="360" data-origin-height="111" width="240" height="74"></span></figure></p>
+<p>오차 roll, pitch, yaw, q0, q1, q2, q3, q 값의 RMS를 구하면 아래와 같다.</p>
+<p>　</p>
+<p><figure class='imageblock alignCenter' data-origin-width="0" data-origin-height="0"><span data-url='https://blog.kakaocdn.net/dn/y8jhP/btqBZqiTACp/CdTRuIKNK7WdPmN0rL6nNK/img.png' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/y8jhP/btqBZqiTACp/CdTRuIKNK7WdPmN0rL6nNK/img.png' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fy8jhP%2FbtqBZqiTACp%2FCdTRuIKNK7WdPmN0rL6nNK%2Fimg.png' data-origin-width="0" data-origin-height="0"></span></figure></p>
+<p>&nbsp;</p>
+<ul style="list-style-type: square;" data-ke-list-type="square">
+<li>&nbsp;원형 궤도이동 및 Z 축 회전 결과</li>
+</ul>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/onxRQ/btqBZfPmZZr/ydKxQz8O6V8tieuL58tdR0/img.bmp" data-lightbox="lightbox" data-filename="image00051.bmp" data-origin-width="585" data-origin-height="426" style="width: 57.3545%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/onxRQ/btqBZfPmZZr/ydKxQz8O6V8tieuL58tdR0/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FonxRQ%2FbtqBZfPmZZr%2FydKxQz8O6V8tieuL58tdR0%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/wv6nz/btqB1nZKhFl/blPTt4hnk1QVXd92yOKb7k/img.bmp" data-lightbox="lightbox" data-filename="image00052.bmp" data-origin-width="293" data-origin-height="295" style="width: 41.4827%;"><img src='https://blog.kakaocdn.net/dn/wv6nz/btqB1nZKhFl/blPTt4hnk1QVXd92yOKb7k/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fwv6nz%2FbtqB1nZKhFl%2FblPTt4hnk1QVXd92yOKb7k%2Fimg.bmp"></span></div></figure></p>
+<p>위의 3축이 모션 캡처로 구한 자세 쿼터니언이고, 아래 3축이 칼만 필터로 구한 자세 쿼터니언 이다.<br />원형 궤도 회전 및 Z 축으로 회전한 자세 쿼터니언의 X, Y, Z값을 그래프로 그리면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00053.bmp" data-origin-width="1264" data-origin-height="383"><span data-url='https://blog.kakaocdn.net/dn/CBmh5/btqB2HQv6Xc/nPkkITxlOuX2itRrsl5zEK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/CBmh5/btqB2HQv6Xc/nPkkITxlOuX2itRrsl5zEK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FCBmh5%2FbtqB2HQv6Xc%2FnPkkITxlOuX2itRrsl5zEK%2Fimg.bmp' data-filename="image00053.bmp" data-origin-width="1264" data-origin-height="383"></span></figure><figure class='imageblock alignCenter' data-origin-width="1250" data-origin-height="371"><span data-url='https://blog.kakaocdn.net/dn/6sp2x/btqBZsgOfkC/oKZ262dQKgW8NE4iok1FwK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/6sp2x/btqBZsgOfkC/oKZ262dQKgW8NE4iok1FwK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F6sp2x%2FbtqBZsgOfkC%2FoKZ262dQKgW8NE4iok1FwK%2Fimg.bmp' data-origin-width="1250" data-origin-height="371"></span></figure><figure class='imageblock alignCenter' data-filename="image00054.bmp" data-origin-width="1307" data-origin-height="493"><span data-url='https://blog.kakaocdn.net/dn/bMxFPY/btqB1bLZeEU/Vj14g6u4kyRVyJKzm8ZVeK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bMxFPY/btqB1bLZeEU/Vj14g6u4kyRVyJKzm8ZVeK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbMxFPY%2FbtqB1bLZeEU%2FVj14g6u4kyRVyJKzm8ZVeK%2Fimg.bmp' data-filename="image00054.bmp" data-origin-width="1307" data-origin-height="493"></span></figure></p>
+<p>쿼터니언의 오차를 그래프로 그리면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00056.bmp" data-origin-width="929" data-origin-height="378"><span data-url='https://blog.kakaocdn.net/dn/b3iTwf/btqB2HQv7k6/QtkokXpyxjF8XTIwdOjI11/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/b3iTwf/btqB2HQv7k6/QtkokXpyxjF8XTIwdOjI11/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb3iTwf%2FbtqB2HQv7k6%2FQtkokXpyxjF8XTIwdOjI11%2Fimg.bmp' data-filename="image00056.bmp" data-origin-width="929" data-origin-height="378"></span></figure><figure class='imageblock alignCenter' width="188" height="58" data-origin-width="360" data-origin-height="111"><span data-url='https://blog.kakaocdn.net/dn/yUyAl/btqBZq4dgg3/K9kC5dEf2Il4Mczm1ktd21/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/yUyAl/btqBZq4dgg3/K9kC5dEf2Il4Mczm1ktd21/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FyUyAl%2FbtqBZq4dgg3%2FK9kC5dEf2Il4Mczm1ktd21%2Fimg.bmp' width="188" height="58" data-origin-width="360" data-origin-height="111"></span></figure></p>
+<p>오차 roll, pitch, yaw, q0, q1, q2, q3, q 값의 RMS를 구하면 아래와 같다.</p>
+<p>　</p>
+<p><figure class='imageblock alignCenter' data-origin-width="0" data-origin-height="0"><span data-url='https://blog.kakaocdn.net/dn/LFoRx/btqB1diKzPk/KCnH1A7dDttvPrOvJeNI71/img.png' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/LFoRx/btqB1diKzPk/KCnH1A7dDttvPrOvJeNI71/img.png' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLFoRx%2FbtqB1diKzPk%2FKCnH1A7dDttvPrOvJeNI71%2Fimg.png' data-origin-width="0" data-origin-height="0"></span></figure></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<ul style="list-style-type: square;" data-ke-list-type="square">
+<li>&nbsp;y = x, y = -x 축으로 회전하였을 때 결과</li>
+</ul>
+<p>Y = -x 축 회전 상태 일 때</p>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/b3vIZS/btqB1nyIHGy/JC6qSxEdLQJuvqIHVR9V61/img.bmp" data-lightbox="lightbox" data-filename="image00058.bmp" data-origin-width="243" data-origin-height="185" style="width: 52.3295%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/b3vIZS/btqB1nyIHGy/JC6qSxEdLQJuvqIHVR9V61/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb3vIZS%2FbtqB1nyIHGy%2FJC6qSxEdLQJuvqIHVR9V61%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/ch6jF7/btqB1HRdHjz/WszRb6qlDh91OyeYUj6ym1/img.bmp" data-lightbox="lightbox" data-filename="image00059.bmp" data-origin-width="272" data-origin-height="233" style="width: 46.5077%;"><img src='https://blog.kakaocdn.net/dn/ch6jF7/btqB1HRdHjz/WszRb6qlDh91OyeYUj6ym1/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fch6jF7%2FbtqB1HRdHjz%2FWszRb6qlDh91OyeYUj6ym1%2Fimg.bmp"></span></div></figure></p>
+<p><br />Y = x 축 회전 상태 일 때</p>
+<p><figure class='imagegridblock'><div class='image-container'><span data-url="https://blog.kakaocdn.net/dn/b7Cxvs/btqB0f8XyVD/whaTYT79SYgu1z3HrYjCn0/img.bmp" data-lightbox="lightbox" data-filename="image00061.bmp" data-origin-width="254" data-origin-height="251" style="width: 43.7505%; margin-right: 10px;"><img src='https://blog.kakaocdn.net/dn/b7Cxvs/btqB0f8XyVD/whaTYT79SYgu1z3HrYjCn0/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb7Cxvs%2FbtqB0f8XyVD%2FwhaTYT79SYgu1z3HrYjCn0%2Fimg.bmp"></span><span data-url="https://blog.kakaocdn.net/dn/omf4z/btqB1oj4A4B/z9SKIUKpV5v7yb27C6fkMk/img.bmp" data-lightbox="lightbox" data-filename="image00060.bmp" data-origin-width="646" data-origin-height="507" style="width: 55.0868%;"><img src='https://blog.kakaocdn.net/dn/omf4z/btqB1oj4A4B/z9SKIUKpV5v7yb27C6fkMk/img.bmp' srcset="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fomf4z%2FbtqB1oj4A4B%2Fz9SKIUKpV5v7yb27C6fkMk%2Fimg.bmp"></span></div></figure></p>
+<p>위의 3축이 모션 캡처로 구한 자세 쿼터니언이고, 아래 3축이 칼만 필터로 구한 자세 쿼터니언 이다.</p>
+<p>y = x 축과 y = -x 축으로 회전하였을 때 쿼터니언의 X, Y, Z값을 그래프로 나타내면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00062.bmp" data-origin-width="1123" data-origin-height="390"><span data-url='https://blog.kakaocdn.net/dn/bGnbNc/btqBZqXrTPV/3TqaqwIsv9sVd6OTKNCBck/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bGnbNc/btqBZqXrTPV/3TqaqwIsv9sVd6OTKNCBck/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbGnbNc%2FbtqBZqXrTPV%2F3TqaqwIsv9sVd6OTKNCBck%2Fimg.bmp' data-filename="image00062.bmp" data-origin-width="1123" data-origin-height="390"></span></figure><figure class='imageblock alignCenter' data-filename="image00063.bmp" data-origin-width="447" data-origin-height="84" width="298" height="56"><span data-url='https://blog.kakaocdn.net/dn/q7MsT/btqB2I9JZZV/2xFFsw7XTqmxU8ZMBhKxmk/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/q7MsT/btqB2I9JZZV/2xFFsw7XTqmxU8ZMBhKxmk/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fq7MsT%2FbtqB2I9JZZV%2F2xFFsw7XTqmxU8ZMBhKxmk%2Fimg.bmp' data-filename="image00063.bmp" data-origin-width="447" data-origin-height="84" width="298" height="56"></span></figure><figure class='imageblock alignCenter' data-filename="image00064.bmp" data-origin-width="1140" data-origin-height="396"><span data-url='https://blog.kakaocdn.net/dn/DdT4P/btqB11on3XJ/izKK5qQS7tMJxJP7onGYRK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/DdT4P/btqB11on3XJ/izKK5qQS7tMJxJP7onGYRK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FDdT4P%2FbtqB11on3XJ%2FizKK5qQS7tMJxJP7onGYRK%2Fimg.bmp' data-filename="image00064.bmp" data-origin-width="1140" data-origin-height="396"></span></figure><figure class='imageblock alignCenter' data-filename="image00065.bmp" data-origin-width="420" data-origin-height="84" width="275" height="55"><span data-url='https://blog.kakaocdn.net/dn/m3iWI/btqB2uqjQM5/oQMHLM9t1VSQhWusVI4eS0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/m3iWI/btqB2uqjQM5/oQMHLM9t1VSQhWusVI4eS0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fm3iWI%2FbtqB2uqjQM5%2FoQMHLM9t1VSQhWusVI4eS0%2Fimg.bmp' data-filename="image00065.bmp" data-origin-width="420" data-origin-height="84" width="275" height="55"></span></figure><figure class='imageblock alignCenter' data-filename="image00066.bmp" data-origin-width="1117" data-origin-height="400"><span data-url='https://blog.kakaocdn.net/dn/bDfDlQ/btqB1GdHHgK/067Ed5x9VQjMh28rKvcRwK/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bDfDlQ/btqB1GdHHgK/067Ed5x9VQjMh28rKvcRwK/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbDfDlQ%2FbtqB1GdHHgK%2F067Ed5x9VQjMh28rKvcRwK%2Fimg.bmp' data-filename="image00066.bmp" data-origin-width="1117" data-origin-height="400"></span></figure><figure class='imageblock alignCenter' data-filename="image00067.bmp" data-origin-width="408" data-origin-height="79" width="253" height="49"><span data-url='https://blog.kakaocdn.net/dn/dbyqcG/btqB10Xkdma/iubds16k4La7KkjMhNQl1K/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/dbyqcG/btqB10Xkdma/iubds16k4La7KkjMhNQl1K/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdbyqcG%2FbtqB10Xkdma%2Fiubds16k4La7KkjMhNQl1K%2Fimg.bmp' data-filename="image00067.bmp" data-origin-width="408" data-origin-height="79" width="253" height="49"></span></figure></p>
+<p>쿼터니언의 오차를 그래프로 그리면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00068.bmp" data-origin-width="934" data-origin-height="395"><span data-url='https://blog.kakaocdn.net/dn/croejF/btqBZrhH2AV/lNCdPzfaKnlk2Unqb2Cxgk/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/croejF/btqBZrhH2AV/lNCdPzfaKnlk2Unqb2Cxgk/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcroejF%2FbtqBZrhH2AV%2FlNCdPzfaKnlk2Unqb2Cxgk%2Fimg.bmp' data-filename="image00068.bmp" data-origin-width="934" data-origin-height="395"></span></figure><figure class='imageblock alignCenter' data-filename="image00069.bmp" data-origin-width="360" data-origin-height="111" width="240" height="74"><span data-url='https://blog.kakaocdn.net/dn/boeNZX/btqBZfV9F6G/oUyf9IRQPY8FhunZkfuXa0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/boeNZX/btqBZfV9F6G/oUyf9IRQPY8FhunZkfuXa0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FboeNZX%2FbtqBZfV9F6G%2FoUyf9IRQPY8FhunZkfuXa0%2Fimg.bmp' data-filename="image00069.bmp" data-origin-width="360" data-origin-height="111" width="240" height="74"></span></figure></p>
+<p>오차 roll, pitch, yaw, q0, q1, q2, q3, q 값의 RMS를 구하면 아래와 같다.</p>
+<p>　</p>
+<p><figure class='imageblock alignCenter' data-origin-width="0" data-origin-height="0"><span data-url='https://blog.kakaocdn.net/dn/dIuYGb/btqBZgU3OIz/ltQnlafGcZeNikE0OujkX1/img.png' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/dIuYGb/btqBZgU3OIz/ltQnlafGcZeNikE0OujkX1/img.png' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FdIuYGb%2FbtqBZgU3OIz%2FltQnlafGcZeNikE0OujkX1%2Fimg.png' data-origin-width="0" data-origin-height="0"></span></figure></p>
+<p>&nbsp;</p>
+<ul style="list-style-type: square;" data-ke-list-type="square">
+<li>22분 30초 동안 정지 상태일 때</li>
+</ul>
+<p>&nbsp;</p>
+<p>모션 캡처와 칼만 필터를 함께 측정하였던 실험장소가 아닌 다른 장소에서 지자기 보정을 한 뒤, 정지 상태에서 측정해 보았다.</p>
+<p>22분 30초 동안의 측정된 자세 쿼터니언을 그래프로 나타내면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-filename="image00070.bmp" data-origin-width="934" data-origin-height="393"><span data-url='https://blog.kakaocdn.net/dn/bhCiJq/btqBZNkzvSj/5StsVNR86dNwaW19Gja7y0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bhCiJq/btqBZNkzvSj/5StsVNR86dNwaW19Gja7y0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbhCiJq%2FbtqBZNkzvSj%2F5StsVNR86dNwaW19Gja7y0%2Fimg.bmp' data-filename="image00070.bmp" data-origin-width="934" data-origin-height="393"></span></figure><figure class='imageblock alignCenter' data-filename="image00071.bmp" data-origin-width="282" data-origin-height="138" width="186" height="91"><span data-url='https://blog.kakaocdn.net/dn/bmsrZv/btqB2whn2dl/KAluz1FTW9qMTk1qhzS7S0/img.bmp' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bmsrZv/btqB2whn2dl/KAluz1FTW9qMTk1qhzS7S0/img.bmp' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbmsrZv%2FbtqB2whn2dl%2FKAluz1FTW9qMTk1qhzS7S0%2Fimg.bmp' data-filename="image00071.bmp" data-origin-width="282" data-origin-height="138" width="186" height="91"></span></figure></p>
+<p>오차 roll, pitch, yaw, q0, q1, q2, q3, q 값의 RMS를 구하면 아래와 같다.</p>
+<p><figure class='imageblock alignCenter' data-origin-width="0" data-origin-height="0"><span data-url='https://blog.kakaocdn.net/dn/nsEXj/btqB1m7BK5H/4jFFNoKFv4uxkaXCwyXf01/img.png' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/nsEXj/btqB1m7BK5H/4jFFNoKFv4uxkaXCwyXf01/img.png' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FnsEXj%2FbtqB1m7BK5H%2F4jFFNoKFv4uxkaXCwyXf01%2Fimg.png' data-origin-width="0" data-origin-height="0"></span></figure></p>
+<ul style="list-style-type: square;" data-ke-list-type="square">
+<li>&nbsp;상보 필터와 비교</li>
+</ul>
+<p><span style="color: #333333;">상보 필터로 계산된 X 축 회전, Y 축 회전, Z 축 회전, 원형 궤도 이동 및 Z 축 회전, y = x 와 y = -x 축 회전의 오차와 칼만 필터로 계산된 오차는 아래와 같다.</span></p>
+<p>　</p>
+<p><figure class='imageblock alignCenter' data-origin-width="0" data-origin-height="0"><span data-url='https://blog.kakaocdn.net/dn/8LM5H/btqBZgt0jjx/GLU320QiLYhxHwLmN62VKk/img.png' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/8LM5H/btqBZgt0jjx/GLU320QiLYhxHwLmN62VKk/img.png' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F8LM5H%2FbtqBZgt0jjx%2FGLU320QiLYhxHwLmN62VKk%2Fimg.png' data-origin-width="0" data-origin-height="0"></span></figure><figure class='imageblock alignCenter' data-origin-width="0" data-origin-height="0"><span data-url='https://blog.kakaocdn.net/dn/mJVQw/btqB1HwUcJZ/U865KRmocJEYltlHp3U6FK/img.png' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/mJVQw/btqB1HwUcJZ/U865KRmocJEYltlHp3U6FK/img.png' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FmJVQw%2FbtqB1HwUcJZ%2FU865KRmocJEYltlHp3U6FK%2Fimg.png' data-origin-width="0" data-origin-height="0"></span></figure></p>
+<p>칼만 필터로 계산된 오차는 아래와 같다.</p>
+<p>　</p>
+<p><figure class='imageblock alignCenter' data-origin-width="0" data-origin-height="0"><span data-url='https://blog.kakaocdn.net/dn/bGMSTv/btqB10QwNwZ/CCxVTpA6z5IoToJ36p2ySK/img.png' data-lightbox='lightbox' data-alt=''><img src='https://blog.kakaocdn.net/dn/bGMSTv/btqB10QwNwZ/CCxVTpA6z5IoToJ36p2ySK/img.png' srcset='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbGMSTv%2FbtqB10QwNwZ%2FCCxVTpA6z5IoToJ36p2ySK%2Fimg.png' data-origin-width="0" data-origin-height="0"></span></figure></p>
+<p>칼만 필터로 구현한 자세 쿼터니언이 상보 필터로 구현한 자세 쿼터니언에 비해서 성능이 평균 약 37% 정도 더 정확하였다.</p>
+<ol start="3">
+<li>연구 성과</li>
+</ol>
+<p>기존의 IMU에서 Raw Data를 이용하여 값을 계산하면 노이즈가 심하고, 시간이 지나면 오차가 누적되며 자신의 가속도도 오차가 되는 여러 단점이 있었다. 이를 보완하기 위하여 노이즈 감소와 정확한 값을 추정할 수 있는 칼만 필터를 만들고 적용하였다. 다양한 자세에서 다양한 움직임에서 적용할 수 있게 되었으므로 활용도가 높으리라 생각한다.</p>
+<ol start="4">
+<li>REFERENCE
+<ol>
+<li>&nbsp;VALENTI, Roberto G.; DRYANOVSKI, Ivan; XIAO, Jizhong. Keeping a good attitude: A quaternion-based orientation filter for IMUs and MARGs. Sensors, 2015, 15.8: 19302-19330.</li>
+<li>&nbsp;MARKLEY, F. Landis. Attitude error representations for Kalman filtering. Journal of guidance, control, and dynamics, 2003, 26.2: 311-317.</li>
+</ol>
+</li>
+<li>Code&nbsp;</li>
+</ol>
+<p><a href="https://github.com/rladntjd/2020practice.git" target="_blank" rel="noopener">https://github.com/rladntjd/2020practice.git</a></p><div class="container_postbtn #post_button_group">
+    <div class="postbtn_like">
+        
+<script>
+    window.ReactionButtonType = 'reaction';
+    window.ReactionApiUrl = '//wsstudynote.tistory.com/reaction';
+    window.ReactionReqBody = {
+        entryId: 7    }
+</script>
+<div class="wrap_btn" id=reaction-7></div>
+<script src=https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/script/reaction/reaction-button-container.min.js?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4></script>
+        <div class="wrap_btn wrap_btn_share">
+    <button type="button" class="btn_post sns_btn btn_share" data-thumbnail-url="https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbCfKg6%2FbtqCRyTux0A%2FyLlUmw1tAsgk2mgnxSd47K%2Fimg.png" data-title="[우수학부생] Kalman Filter 을 이용한 자세 추정 및 모션 캡처를 이용한 실험 결과" data-description=" - 칼만 필터를 사용할때는 state, 모델, Z 뭔지 반드시 설명 해야함  - 78.5hz 가 아쉽  - 최소 500hz 에서 law pass filter 한번 돌리고 다시 칼만을 넣으면 훨씬 더 정확해질 수 있음 연구 목적 IMU를 통해.." data-profile-image="https://t1.daumcdn.net/tistory_admin/static/manage/images/r3/default_L.png" data-profile-name="rladntjd" data-pc-url="https://wsstudynote.tistory.com/7" data-relative-pc-url="/7" data-blog-title="우성이의 정리노트">
+        <span class="ico_postbtn ico_share">공유하기</span>
+    </button>
+</div>
+                <div class="wrap_btn wrap_btn_etc" data-entry-id="7" data-entry-visibility="public" data-category-visibility="public">
+    <button type="button" class="btn_post btn_etc2"><span class="ico_postbtn ico_etc">글 요소</span></button>
+</div>
+    </div>
+    <button type="button" class="btn_menu_toolbar btn_subscription  #subscribe" data-blog-id="3519319" data-url="https://wsstudynote.tistory.com/7" data-device="web_pc">
+    <em class="txt_state">구독하기</em>
+    <strong class="txt_tool_id">우성이의 정리노트</strong>
+    <span class="img_common_tistory ico_check_type1"></span>
+</button>
+    <div class="postbtn_ccl" data-ccl-type="">
+    <a href="https://creativecommons.org/licenses//4.0/deed.ko" target="_blank" class="link_ccl">
+        <span class="bundle_ccl">
+                    </span>
+    </a>
+</div>
+    <!--
+<rdf:RDF xmlns="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <Work rdf:about="">
+        <license rdf:resource="http://creativecommons.org/licenses/by-/2.0/kr/" />
+    </Work>
+    <License rdf:about="http://creativecommons.org/licenses/by-/">
+        <permits rdf:resource="http://web.resource.org/cc/Reproduction"/>
+        <permits rdf:resource="http://web.resource.org/cc/Distribution"/>
+        <requires rdf:resource="http://web.resource.org/cc/Notice"/>
+        <requires rdf:resource="http://web.resource.org/cc/Attribution"/>
+                    </License>
+</rdf:RDF>
+-->
+</div><div class="another_category another_category_color_gray">
+<h4>'<a href="/category/Sensor%20fusion">Sensor fusion</a>' 카테고리의 다른 글</h4>
+<table>
+<tr>
+<th>
+<a href="/22?category=954489" >Extended Kalman Filter &amp; Error state Kalman Filter (IMU + Motion Capture)</a>&nbsp;&nbsp;<span>(0)</span>
+</th>
+<td>
+2020.07.23</td>
+</tr>
+<tr>
+<th>
+<a href="/7?category=954489"  class ="current" >[우수학부생] Kalman Filter 을 이용한 자세 추정 및 모션 캡처를 이용한 실험 결과</a>&nbsp;&nbsp;<span>(0)</span>
+</th>
+<td>
+2020.02.14</td>
+</tr>
+<tr>
+<th>
+<a href="/6?category=954489" >imu 센서를 활용한  attitude estimation (quaternion base)</a>&nbsp;&nbsp;<span>(2)</span>
+</th>
+<td>
+2020.02.10</td>
+</tr>
+<tr>
+<th>
+<a href="/3?category=954489" >Kalman Filter</a>&nbsp;&nbsp;<span>(0)</span>
+</th>
+<td>
+2020.01.11</td>
+</tr>
+</table></div></div>
+						</div>
+						
+
+						
+							<div class="related-articles">
+								<h2><strong>'Sensor fusion'</strong> Related Articles</h2>
+								<ul>
+									
+										<li>
+											<a href="/22?category=954489">
+												<span class="thum">
+													
+														<img src="//i1.daumcdn.net/thumb/C200x200/?fname=https://blog.kakaocdn.net/dn/cGiT8q/btqFZyaXDS5/0c4qYQjqxNr0OxsffyQDA0/img.png" alt="">
+													
+												</span>
+												<span class="title">Extended Kalman Filter &amp; Error state Kalman Filter (IMU + Motion Capture)</span>
+											</a>
+										</li>
+									
+										<li>
+											<a href="/6?category=954489">
+												<span class="thum">
+													
+														<img src="//i1.daumcdn.net/thumb/C200x200/?fname=https://blog.kakaocdn.net/dn/0ll5M/btqBOD3Ns0J/kGJvNY2FKdnmGFrwGoPt51/img.png" alt="">
+													
+												</span>
+												<span class="title">imu 센서를 활용한  attitude estimation (quaternion base)</span>
+											</a>
+										</li>
+									
+										<li>
+											<a href="/3?category=954489">
+												<span class="thum">
+													
+														<img src="//i1.daumcdn.net/thumb/C200x200/?fname=https://blog.kakaocdn.net/dn/6bSPV/btqBOr1DLW3/9RxIjzgvk9bDaRVi2RqDY0/img.png" alt="">
+													
+												</span>
+												<span class="title">Kalman Filter</span>
+											</a>
+										</li>
+									
+								</ul>
+							</div>
+						
+
+						<div id="entry7Comment">
+							<div class="comments">
+								
+
+								<form method="post" action="/comment/add/7" onsubmit="return false" style="margin: 0">
+									<div class="comment-form">
+										
+											<div class="field">
+												
+													<input type="text" name="name" value="" placeholder="이름">
+													<input type="password" name="password" value="" placeholder="암호">
+												
+												<div class="secret">
+													<input type="checkbox" name="secret" id="secret">
+													<label for="secret" tabindex="0">Secret</label>
+												</div>
+											</div>
+										
+										<textarea name="comment" cols="" rows="4" placeholder="여러분의 소중한 댓글을 입력해주세요."></textarea>
+										<div class="submit">
+											<button type="submit" class="btn" onclick="addComment(this, 7); return false;">댓글달기</button>
+										</div>
+								</div>
+								</form>
+							</div>
+						</div><script type="text/javascript">loadedComments[7]=true;findFragmentAndHighlight(7)</script>
+
+					
+				
+			</div>
+
+			
+
+			
+
+			
+				<div class="pagination">
+					<a  href='/8' class="prev ">이전</a>
+					
+						<a  href='/28'><span >1</span></a>
+					
+						<a ><span >&middot;&middot;&middot;</span></a>
+					
+						<a  href='/11'><span >16</span></a>
+					
+						<a  href='/10'><span >17</span></a>
+					
+						<a  href='/9'><span >18</span></a>
+					
+						<a  href='/8'><span >19</span></a>
+					
+						<a ><span class="selected">20</span></a>
+					
+						<a  href='/6'><span >21</span></a>
+					
+						<a  href='/4'><span >22</span></a>
+					
+						<a  href='/5'><span >23</span></a>
+					
+						<a  href='/3'><span >24</span></a>
+					
+						<a  href='/2'><span >25</span></a>
+					
+					<a  href='/6' class="next ">다음</a>
+				</div>
+			
+
+		</article>
+		<aside id="aside">
+			<div class="inner">
+				<div class="sidebar-1">
+					
+							<!-- 공지사항 -->
+							
+								<div class="posts">
+									<h2>공지사항</h2>
+									<ul>
+										
+									</ul>
+								</div>
+							
+						
+							<!-- 최근 포스트 -->
+							<div class="posts">
+								<h2>최근 포스트</h2>
+								<ul>
+									
+									<li><a href="/28">python 스타일 가이드 정리</a></li>
+									
+
+									<li><a href="/26">[S-hero] 유선 멀티 드론</a></li>
+									
+
+									<li><a href="/25">[로봇 항공기 대회] 드론⋯</a></li>
+									
+
+									<li><a href="/24">TensorFlow</a></li>
+									
+
+									<li><a href="/23">opencv PYTHON</a></li>
+									
+								</ul>
+							</div>
+						
+				</div>
+
+				<div class="sidebar-2">
+						
+								<!-- 태그 -->
+								<div class="tags">
+									<h2>태그</h2>
+									<div class="items">
+										
+									</div>
+									<a href="/tag" class="more">더보기</a>
+								</div>
+							
+				</div>
+
+				<div class="sidebar-3">
+					
+							<!-- 검색 -->
+							<div class="search">
+								<h2>검색</h2>
+								
+									<fieldset>
+										<input type="text" name="search" value="" placeholder="검색내용을 입력하세요." onkeypress="if (event.keyCode == 13 ) { try{window.location.href='/search/'+looseURIEncode(document.getElementsByName('search')[0].value);document.getElementsByName('search')[0].value='';return false;}catch(e){} }">
+										<button type="button" onclick="try{window.location.href='/search/'+looseURIEncode(document.getElementsByName('search')[0].value);document.getElementsByName('search')[0].value='';return false;}catch(e){}">검색</button>
+									</fieldset>
+								
+							</div>
+						
+							<!-- 전체 방문자 -->
+							<div class="count">
+								<h2>전체 방문자</h2>
+								<p class="total">9,253</p>
+								<ul>
+									<li><strong>오늘</strong>0</li>
+									<li><strong>어제</strong>39</li>
+								</ul>
+							</div>
+						
+				</div>
+			</div>
+		</aside>
+	</section>
+	<hr>
+	
+	<footer id="footer">
+		<p class="copyright">DESIGN BY <a href="#">TISTORY</a> <a href="https://wsstudynote.tistory.com/manage" class="admin">관리자</a></p>
+	</footer>
+</div>
+<script src="https://tistory1.daumcdn.net/tistory/0/pg_Whatever/images/script.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/kotlin.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/swift.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/scala.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script><script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+<script type="text/javascript">
+	if(!wcs_add) var wcs_add = {};
+	wcs_add["wa"] = encodeURI("	8f1c30828278f8");
+	wcs_do();
+</script><script src="//search1.daumcdn.net/search/statics/common/js/g/search_dragselection.min.js"></script>
+<script>
+    (function($) {
+        $("body").bind('copy', function (e) {
+
+            var url = document.location.href,
+                decodedUrl = decodeURI(url),
+                selection = window.getSelection();
+
+
+            if (typeof window.getSelection == "undefined") {//IE8 or earlier...
+                event.preventDefault();
+
+                var pagelink = '\n\n 출처: ' + decodedUrl,
+                    copytext = selection + pagelink;
+
+                if (window.clipboardData) {
+                    window.clipboardData.setData('Text', copytext);
+                }
+                return;
+            }
+            var body_element = document.getElementsByTagName('body')[0];
+
+            //if the selection is short let's not annoy our users
+            if (("" + selection).length < 30) return;
+
+            //create a div outside of the visible area
+            var newdiv = document.createElement('div');
+            newdiv.style.position = 'absolute';
+            newdiv.style.left = '-99999px';
+            body_element.appendChild(newdiv);
+            newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+            //we need a <pre> tag workaround
+            //otherwise the text inside "pre" loses all the line breaks!
+            if (selection.getRangeAt(0).commonAncestorContainer.nodeName == "PRE") {
+                newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+            }
+
+            newdiv.innerHTML += '<br /><br />출처: <a href="' + url + '">' + escapeHTML(decodedUrl) + '</a> [우성이의 정리노트]';
+
+            selection.selectAllChildren(newdiv);
+
+            window.setTimeout(function () {
+                body_element.removeChild(newdiv);
+            }, 200);
+        });
+    })(tjQuery);
+</script>
+	<script>
+	    lightbox.option({
+			"fadeDuration": 200,
+		    "resizeDuration": 200,
+		    "wrapAround": false,
+			"albumLabel": "%1 / %2",
+			"fitImagesInViewport":true ,
+			"stopEvent": false
+	    })
+	</script>            <script type="text/javascript" src="//t1.daumcdn.net/tiara/js/v1/tiara.min.js"></script>
+            <script type="text/javascript">window.tiara = {"svcDomain":"user.tistory.com","section":"\uae00\ubdf0","trackPage":"\uae00\ubdf0_\ubcf4\uae30","page":"\uae00\ubdf0","key":"3519319-7","customProps":{"userId":0,"blogId":"3519319","role":"guest","filterTarget":false,"trackPage":"\uae00\ubdf0_\ubcf4\uae30","entryId":"7"},"entry":{"entryId":"7","categoryName":"Sensor fusion","categoryId":"954489","author":"4138955","authorId":"4138955","image":"4138955","plink":"\/7","tags":[],"key":"3519319-7"},"sentryDsn":"https:\/\/a53520229cd744e798d42900d76b0e2a@aem-collector.daumkakao.io\/713","kakaoAppKey":"b8aef3eeb03fa312b81795386484f051","appUserId":null};</script>
+            <script type="text/javascript" src="https://t1.daumcdn.net/tistory_admin/assets/blog/tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4/blogs/script/tiara/tiara.min.js?_version_=tistory-e9d2a2fa0137730554b0b8ddf87b531a215fe9b4" defer></script>
+                        <script type="text/javascript">
+                window.roosevelt_params_queue = window.roosevelt_params_queue || [{channel_id: 'dk', channel_label: 'tistory'}];
+            </script>
+            <script type="text/javascript" src="//t1.daumcdn.net/midas/rt/dk_bt/roosevelt_dk_bt.js" async></script><script type="text/javascript">if(window.console!=undefined){setTimeout(console.log.bind(console,"%cTISTORY","font:8em Arial;color:#EC6521;font-weight:bold"),0);setTimeout(console.log.bind(console,"%c  나를 표현하는 블로그","font:2em sans-serif;color:#333;"),0);}</script><iframe style="position:absolute;width:1px;height:1px;left:-100px;top:-100px" src="//wsstudynote.tistory.com/api" id="editEntry"></iframe><div id="tistoryEtcLayer" class="layer_post"></div><div id="tistorySnsLayer" class="layer_post"></div></body>
+</html>
